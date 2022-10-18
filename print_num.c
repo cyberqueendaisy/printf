@@ -1,82 +1,79 @@
 #include "main.h"
 
 /**
- * convert - converter function, a clone of itoa
- * @num: number
- * @base: base
- * @flags: argument flags
- * @params: paramater struct
+ * print_i - prints an integer
+ * @i: integer to print
  *
- * Return: string
+ * Return: number of chars and digits printed
  */
-char *convert(long int num, int base, int flags, params_t *params)
+int print_i(va_list i)
 {
-	static char *array;
-	static char buffer[50];
-	char sign = 0;
-	char *ptr;
-	unsigned long n = num;
-	(void)params;
+	int a[10];
+	int j, m, n, sum, count;
 
-	if (!(flags & CONVERT_UNSIGNED) && num < 0)
+	n = va_arg(i, int);
+	count = 0;
+	m = 1000000000;
+	a[0] = n / m;
+	for (j = 1; j < 10; j++)
 	{
-		n = -num;
-		sign = '-';
-
+		m /= 10;
+		a[j] = (n / m) % 10;
 	}
-	array = flags & CONVERT_LOWERCASE ? "0123456789abcdef" : "0123456789ABCDEF";
-	ptr = &buffer[49];
-	*ptr = '\0';
-
-	do	{
-		*--ptr = array[n % base];
-		n /= base;
-	} while (n != 0);
-
-	if (sign)
-		*--ptr = sign;
-	return (ptr);
+	if (n < 0)
+	{
+		_putchar('-');
+		count++;
+		for (j = 0; j < 10; j++)
+			a[j] *= -1;
+	}
+	for (j = 0, sum = 0; j < 10; j++)
+	{
+		sum += a[j];
+		if (sum != 0 || j == 9)
+		{
+			_putchar('0' + a[j]);
+			count++;
+		}
+	}
+	return (count);
 }
 
 /**
- * print_unsigned - prints unsigned integer numbers
- * @ap: argument pointer
- * @params: the parameters struct
+ * print_d - prints a decimal
+ * @d: decimal to print
  *
- * Return: bytes printed
+ * Return: number of chars and digits printed
  */
-int print_unsigned(va_list ap, params_t *params)
+int print_d(va_list d)
 {
-	unsigned long l;
+	int a[10];
+	int j, m, n, sum, count;
 
-	if (params->l_modifier)
-		l = (unsigned long)va_arg(ap, unsigned long);
-	else if (params->h_modifier)
-		l = (unsigned short int)va_arg(ap, unsigned int);
-	else
-		l = (unsigned int)va_arg(ap, unsigned int);
-	params->unsign = 1;
-	return (print_number(convert(l, 10, CONVERT_UNSIGNED, params), params));
+	n = va_arg(d, int);
+	count = 0;
+	m = 1000000000;
+	a[0] = n / m;
+	for (j = 1; j < 10; j++)
+	{
+		m /= 10;
+		a[j] = (n / m) % 10;
+	}
+	if (n < 0)
+	{
+		_putchar('-');
+		count++;
+		for (j = 0; j < 10; j++)
+			a[j] *= -1;
+	}
+	for (j = 0, sum = 0; j < 10; j++)
+	{
+		sum += a[j];
+		if (sum != 0 || j == 9)
+		{
+			_putchar('0' + a[j]);
+			count++;
+		}
+	}
+	return (count);
 }
-
-
-
-/**
- * print_address - prints address
- * @ap: argument pointer
- * @params: the parameters struct
- *
- * Return: bytes printed
- */
-int print_address(va_list ap, params_t *params)
-{
-	unsigned long int n = va_arg(ap, unsigned long int);
-	char *str;
-
-	if (!n)
-		return (_puts("(nil)"));
-
-	str = convert(n, 16, CONVERT_UNSIGNED | CONVERT_LOWERCASE, params);
-	*--str = 'x';
-	*--str = '0';
-	return (print_number(str, params));
